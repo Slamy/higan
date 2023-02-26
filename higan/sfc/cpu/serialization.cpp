@@ -3,6 +3,13 @@ auto CPU::serialize(serializer& s) -> void {
   Thread::serialize(s);
   PPUcounter::serialize(s);
 
+  printf("Serialize!\n");
+
+  FILE *f = fopen("wramDebug","wb");
+  if (f)
+	  fwrite(wram,1,sizeof(wram),f);
+  fclose(f);
+
   s.array(wram);
 
   s.integer(version);

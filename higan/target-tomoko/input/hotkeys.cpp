@@ -68,6 +68,15 @@ auto InputManager::appendHotkeys() -> void {
     hotkeys.append(hotkey);
   }
 
+  { auto hotkey = new InputHotkey;
+    hotkey->name = "Tracer";
+    hotkey->press = [] {
+      program->tracerToggle();
+    };
+    hotkeys.append(hotkey);
+  }
+
+
   for(auto& hotkey : hotkeys) {
     hotkey->path = string{"Hotkey/", hotkey->name}.replace(" ", "");
     hotkey->assignment = settings(hotkey->path).text();

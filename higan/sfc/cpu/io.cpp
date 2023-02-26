@@ -1,5 +1,15 @@
-auto CPU::readAPU(uint24 addr, uint8 data) -> uint8 {
+extern file tracerfp;
+
+
+auto CPU::readAPU(uint24 addr, uint8 data) -> uint8
+{
   synchronize(smp);
+  if (tracerfp)
+  {
+	  char buf[100];
+	  sprintf(buf,"SPC Read %x <= %02x\n",addr & 3);
+	  tracerfp.print(buf);
+  }
   return smp.readPort(addr.bits(0,1));
 }
 
@@ -156,12 +166,30 @@ auto CPU::readDMA(uint24 addr, uint8 data) -> uint8 {
   return data;
 }
 
+int spcWriteOccured=0;
+int spcWriteOccuredAdr[5];
+
 auto CPU::writeAPU(uint24 addr, uint8 data) -> void {
   synchronize(smp);
+
+  if (tracerfp)
+  {
+	  char buf[100];
+	  sprintf(buf,"SPC Write %x <= %02x\n",addr & 3,data);
+	  tracerfp.print(buf);
+  }
+
+  //if ((addr & 3)==1)
+  //printf("SPC Write %x <= %02x\n",addr & 3,data);
+  spcWriteOccuredAdr[spcWriteOccured]=addr;
+  spcWriteOccured++;
+
   return writePort(addr.bits(0,1), data);
 }
 
 auto CPU::writeCPU(uint24 addr, uint8 data) -> void {
+
+
   switch((uint16)addr) {
 
   //WMDATA

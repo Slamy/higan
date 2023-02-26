@@ -1,6 +1,13 @@
+#include <iostream>
+#include <string>
 #include <sfc/sfc.hpp>
 
+
+
 namespace SuperFamicom {
+
+file tracerfp;
+
 
 CPU cpu;
 #include "dma.cpp"
@@ -23,7 +30,241 @@ auto CPU::Enter() -> void {
   while(true) scheduler.synchronize(), cpu.main();
 }
 
+extern int spcWriteOccuredAdr[5];
+extern int spcWriteOccured;
+
 auto CPU::main() -> void {
+
+  /*
+  if (r.pc == 0xbfad1d
+		  || r.pc == 0x09d456
+		  //|| r.pc == 0x8095ac Zu oft
+		  //|| r.pc == 0x89d49c Zu oft
+		  || r.pc == 0x84a123
+		  //|| r.pc == 0x809409 Zu oft
+		  //|| r.pc == 0x89d71f Zu oft
+		  || r.pc == 0x09d3e5
+		  || r.pc == 0x09d006
+		  || r.pc == 0x09d0ef
+		  || r.pc == 0x09d0f2
+		  || r.pc == 0x09d0fd
+		  || r.pc == 0x09d10d
+		  || r.pc == 0x09d110
+		  || r.pc == 0x09d11b
+		  || r.pc == 0x09d11e
+		  || r.pc == 0x09d130
+		  || r.pc == 0x09d14a
+		  || r.pc == 0x09d164
+		  || r.pc == 0x09d16f
+		  || r.pc == 0x09d17c
+		  || r.pc == 0x09d189
+		  || r.pc == 0x09d194
+		  || r.pc == 0x09d1ee
+		  || r.pc == 0x09d1f1
+		  || r.pc == 0x09d1fc
+		  || r.pc == 0x09d214
+		  || r.pc == 0x09d26e
+		  || r.pc == 0x09d271
+		  || r.pc == 0x09d27c
+		  || r.pc == 0x09d3e5
+		  || r.pc == 0x09d3f3
+		  || r.pc == 0x09d410
+		  || r.pc == 0xbfad1d
+		  || r.pc == 0xbfad30
+		  || r.pc == 0xbfad43
+		  || r.pc == 0xbfad49
+		  || r.pc == 0xbfad6c
+		  || r.pc == 0xbfb00c
+
+		  )
+		  */
+
+  /*
+  if (r.pc == 0x808082
+		  || r.pc == 0x808085
+		  || r.pc == 0x808088
+		  || r.pc == 0x80808c
+		  || r.pc == 0x808090
+		  || r.pc == 0x808a81
+		  || r.pc == 0x808e64
+		  || r.pc == 0x808eaf
+		  || r.pc == 0x808ef8
+		  || r.pc == 0x808efb
+		  || r.pc == 0x8097e8
+		  || r.pc == 0x809812
+		  || r.pc == 0x80d134
+		  || r.pc == 0x80d142
+		  || r.pc == 0x8184e9
+		  || r.pc == 0x8184ed
+		  || r.pc == 0x81acb3
+		  || r.pc == 0x81acc5
+		  || r.pc == 0x81ba04
+		  || r.pc == 0x81ba07
+		  || r.pc == 0x84839c
+		  || r.pc == 0x84a09c
+		  || r.pc == 0x89d0ef
+		  || r.pc == 0x89d0f2
+		  || r.pc == 0x89d0fd
+		  || r.pc == 0x89d10d
+		  || r.pc == 0x89d110
+		  || r.pc == 0x89d11b
+		  || r.pc == 0x89d11e
+		  || r.pc == 0x89d130
+		  || r.pc == 0x89d14a
+		  || r.pc == 0x89d164
+		  || r.pc == 0x89d16f
+		  || r.pc == 0x89d17c
+		  || r.pc == 0x89d189
+		  || r.pc == 0x89d194
+		  || r.pc == 0x89d1ee
+		  || r.pc == 0x89d1f1
+		  || r.pc == 0x89d1fc
+		  || r.pc == 0x89d214
+		  || r.pc == 0x89d26e
+		  || r.pc == 0x89d271
+		  || r.pc == 0x89d27c)
+  {
+	  std::cout<< disassemble()<<std::endl;
+
+  }
+  */
+
+	/*
+  if (tracerfp)
+  {
+	  string disassembled = disassemble();
+	  if (disassembled[7] == 'j' && disassembled[8] == 's')
+	  {
+		  tracerfp.print(disassembled, "\n");
+
+		  //std::cout<< disassembled<<std::endl;
+	  }
+	  else if (disassembled[7] == 'r' && disassembled[8] == 't')
+	  {
+		  tracerfp.print(disassembled, "\n");
+	  }
+  }
+*/
+  if (tracerfp)
+  {
+	  string disassembled = disassemble();
+	  tracerfp.print(disassembled, "\n");
+  }
+
+  if (spcWriteOccured>1)
+  {
+	  if (spcWriteOccuredAdr[0]==0x2140)
+	  {
+		  printf("Unallowed SPC Operation! %x %x %x ***********\n",
+				  spcWriteOccuredAdr[0],
+				  spcWriteOccuredAdr[1],
+				  spcWriteOccuredAdr[2]);
+
+		  if (tracerfp)
+			{
+			  string disassembled = disassemble();
+			  tracerfp.print("Unallowed SPC", "\n");
+			}
+
+	  }
+  }
+
+  spcWriteOccured=0;
+
+  if (r.pc == 0x89d14a)
+  {
+    printf("Transmission\n",r.a.w);
+  }
+
+  /*
+  if (r.pc == 0x89d74c)
+  {
+
+    printf("Transmission finished\n",r.a.w);
+  }
+  */
+  if (r.pc == 0x81ba53)
+  {
+
+    printf("Ausgeführt\n",r.a.w);
+  }
+
+
+  if (r.pc == 0x89d012)
+  {
+	  std::cout<< disassemble()<<std::endl;
+  }
+
+
+
+
+  /*
+  if (r.pc == 0x8095ac)
+  {
+	  if (tracerfp)
+	  {
+		  char buf[512];
+		  sprintf(buf,"Volume set to %x?\n",r.a.w);
+	  	  tracerfp.print(buf, "\n");
+	  }
+
+	  printf("Volume set to %x?\n",r.a.w);
+  }
+  */
+
+  uint24 fileAddr=((r.pc & 0x7f0000) >> 1) + (r.pc & 0x7fff);
+
+  //if (r.pc == 0x09d00c || r.pc== 0xbfad43)
+  if (fileAddr == 0x4d00c || fileAddr == 0x1fad43)
+  {
+	  if (tracerfp)
+	  {
+		  char buf[512];
+		  sprintf(buf,"Soundbase set to %x?\n",r.a.w);
+	  	  tracerfp.print(buf, "\n");
+	  }
+
+	  printf("Soundbase set to %x?\n",r.a.w);
+  }
+
+  //if (r.pc == 0x09d0ef || r.pc== 0xd388)
+  /*
+  if (fileAddr == 0x4d0ef || fileAddr == 0x5388)
+  {
+	  if (tracerfp)
+	  {
+		  char buf[512];
+		  sprintf(buf,"Global Track set to %x?\n",r.a.w);
+	  	  tracerfp.print(buf, "\n");
+	  }
+
+	  printf("Global Track to %x?\n",r.a.w);
+  }
+  */
+
+  if (fileAddr == 0x04d012)
+  {
+	  std::cout<< disassemble()<<std::endl;
+  }
+
+	if (fileAddr == 0x04d7ab)
+	{
+		std::cout<< "Play soundeffect start"<<std::endl;
+	}
+	if (fileAddr == 0x04d756)
+	{
+		std::cout<< "Play soundeffect end"<<std::endl;
+	}
+
+
+  /*
+  if (r.pc == 0x09d3e5)
+  {
+	  printf("Select Track in Soundbase %d\n",r.x.w);
+  }
+  */
+
+
   if(status.interruptPending) {
     status.interruptPending = false;
     if(status.nmiPending) {

@@ -26,6 +26,7 @@ struct Program : Emulator::Interface::Bind {
   auto saveState(uint slot, bool manager = false) -> bool;
 
   //utility.cpp
+  auto tracerToggle() -> void;
   auto powerCycle() -> void;
   auto softReset() -> void;
   auto connectDevices() -> void;

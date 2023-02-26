@@ -1,3 +1,33 @@
+
+namespace SuperFamicom {
+extern file tracerfp;
+extern file tracerfp_spc;
+}
+auto Program::tracerToggle() -> void {
+  if(!SuperFamicom::tracerfp)
+  {
+	  SuperFamicom::tracerfp.open({Path::user(), "tracer.log"}, file::mode::write);
+	  showMessage("Tracer enabled");
+  }
+  else
+  {
+	  SuperFamicom::tracerfp.close();
+	  showMessage("Tracer disabled");
+  }
+
+  if(!SuperFamicom::tracerfp_spc)
+  {
+	  SuperFamicom::tracerfp_spc.open({Path::user(), "tracerSpc.log"}, file::mode::write);
+	  showMessage("Tracer enabled");
+  }
+  else
+  {
+	  SuperFamicom::tracerfp_spc.close();
+	  showMessage("Tracer disabled");
+  }
+
+}
+
 auto Program::powerCycle() -> void {
   if(!emulator) return;
   emulator->power();

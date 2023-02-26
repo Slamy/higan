@@ -113,6 +113,9 @@ auto R65816::disassemble(uint24 addr, bool e, bool m, bool x) -> string {
   pc.d = addr;
   s = {hex(pc, 6), " "};
 
+  uint24 fileAddr=((addr & 0x7f0000) >> 1) + (addr & 0x7fff);
+  s.append(hex(fileAddr, 6), " ");
+
   uint8 op  = dreadb(pc.d); pc.w++;
   uint8 op0 = dreadb(pc.d); pc.w++;
   uint8 op1 = dreadb(pc.d); pc.w++;

@@ -1,6 +1,10 @@
 #include <processor/processor.hpp>
 #include "spc700.hpp"
 
+namespace SuperFamicom {
+file tracerfp_spc;
+}
+
 namespace Processor {
 
 #include "algorithms.cpp"
@@ -12,6 +16,14 @@ namespace Processor {
 #define fp(name) &SPC700::op_##name
 
 auto SPC700::instruction() -> void {
+
+
+  if (SuperFamicom::tracerfp_spc)
+  {
+	  string disassembled = disassemble(regs.pc, regs.p);
+	  SuperFamicom::tracerfp_spc.print(disassembled, "\n");
+  }
+
   switch(opcode = readPC()) {
   op(0x00, nop)
   op(0x01, jst)

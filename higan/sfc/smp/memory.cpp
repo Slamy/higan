@@ -1,3 +1,7 @@
+
+extern file tracerfp_spc;
+
+
 alwaysinline auto SMP::readRAM(uint16 addr) -> uint8 {
   if(addr >= 0xffc0 && io.iplromEnable) return iplrom[addr & 0x3f];
   if(io.ramDisable) return 0x5a;  //0xff on mini-SNES
@@ -184,6 +188,18 @@ auto SMP::read(uint16 addr) -> uint8 {
   step(12);
   cycleEdge();
   debug(smp.read, addr, data);
+
+  if (addr>=0xF4 && addr<=0xF7)
+  {
+	  //printf("SPC Read %d %x\n",addr-0xf4,data);
+		if (SuperFamicom::tracerfp_spc)
+		{
+			char text[500];
+			sprintf(text,"SPC Read %d %x",addr-0xf4,data);
+			SuperFamicom::tracerfp_spc.print(text, "\n");
+		}
+  }
+
   return data;
 }
 
@@ -192,6 +208,17 @@ auto SMP::write(uint16 addr, uint8 data) -> void {
   writeBus(addr, data);
   cycleEdge();
   debug(smp.write, addr, data);
+
+  if (addr>=0xF4 && addr<=0xF7)
+  {
+	  //printf("SPC Read %d %x\n",addr-0xf4,data);
+		if (SuperFamicom::tracerfp_spc)
+		{
+			char text[500];
+			sprintf(text,"SPC Write %d %x",addr-0xf4,data);
+			SuperFamicom::tracerfp_spc.print(text, "\n");
+		}
+  }
 }
 
 auto SMP::readDisassembler(uint16 addr) -> uint8 {
